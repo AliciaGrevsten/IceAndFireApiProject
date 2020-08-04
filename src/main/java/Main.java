@@ -3,7 +3,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.*;
-import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -20,20 +19,22 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String characterNumber = introduction();
+        String characterNumber = introduction();                            // Gets the user input
 
-        JSONObject character = getCharacter(characterNumber);
+        JSONObject character = getCharacter(characterNumber);               // Stores information about character
+        displayCharacter(character);                                        // Prints the information
 
-        String houseURL = getHouseUrl(character);
-        JSONObject house = getJSONObject(houseURL);
+        String houseURL = getHouseUrl(character);                           // The url to get information about house
+        JSONObject house = getJSONObject(houseURL);                         // Stores information about house
 
-        ArrayList<String> swornMembers = getSwornMembersList(house);
+        ArrayList<String> swornMembers = getSwornMembersList(house);        // A list of all the sworn members names
 
-        displayMembers(swornMembers);
+        displayMembers(swornMembers);                                       // Prints all the sworn members
 
         String publisher = "Bantam Books";
-        Map<String, String[]> povCharacters = getPOVCharacters(publisher);
-        displayPOVCharacters(povCharacters, publisher);
+        Map<String, String[]> povCharacters = getPOVCharacters(publisher);  // Stores a list of pov and connects them
+                                                                            // to the right book
+        displayPOVCharacters(povCharacters, publisher);                     // Displays the povs and book names
 
     }
 
@@ -42,22 +43,15 @@ public class Main {
 
         System.out.println("Fire and Ice, character search.");
         System.out.print("Character number: ");
-        String characterNumber = scanner.next();
 
         // -- Insert code for validating if user input is a number --
 
-        return characterNumber;
+        return scanner.next();
     }
 
     public static JSONObject getCharacter(String characterNumber) {
-        // Find and print information about character
         String characterSearchUrl = "https://anapioficeandfire.com/api/characters/" + characterNumber;
-        JSONObject character = getJSONObject(characterSearchUrl);
-        System.out.println(character.toString(4));
-        System.out.println();
-        System.out.println("Working..");
-
-        return character;
+        return getJSONObject(characterSearchUrl);
     }
 
     public static String getHouseUrl(JSONObject character) {
@@ -80,29 +74,6 @@ public class Main {
         }
 
         return swornMembersNames;
-    }
-
-    public static void displayMembers(ArrayList<String> swornMembers) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Do you want to display all the sworn members of this characters house [yes/no]? ");
-        String answer = scanner.next().toLowerCase();
-        switch (answer) {
-            case "yes":
-                for (int i = 0; i < swornMembers.size(); i++) {
-                    System.out.println((i + 1) +". " + swornMembers.get(i));
-                }
-                break;
-            case "no":
-                System.out.println("As you wish.");
-                break;
-            default:
-                System.out.println("I take that as a no.");
-                break;
-        }
-        scanner.close();
-        System.out.println();
-        System.out.println("Working...");
-        System.out.println();
     }
 
     public static Map<String, String[]> getPOVCharacters(String publisher) {
@@ -144,24 +115,6 @@ public class Main {
         return booksPublishedBy;
     }
 
-    public static void displayPOVCharacters(Map<String, String[]> bookPovListPair, String publisher) {
-        System.out.println("All books published by \"" + publisher + "\": ");
-        for (Map.Entry<String, String[]> pair: bookPovListPair.entrySet()) {
-            System.out.println();
-            System.out.println("Book: \"" + pair.getKey() + "\"");
-            System.out.print("POV: ");
-            for (int i = 0; i < pair.getValue().length; i++) {
-                if (i < pair.getValue().length - 1) {
-                    System.out.print(pair.getValue()[i] + ", ");
-                } else {
-                    System.out.print(pair.getValue()[i]);
-                }
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
     public static JSONArray getJSONArray(String u) {
         try {
             URL url = new URL(u);
@@ -180,8 +133,7 @@ public class Main {
                 }
                 br.close();
 
-                JSONArray json = new JSONArray((content.toString()));
-                return json;
+                return new JSONArray((content.toString()));
 
             } else {
                 System.out.println("Error");
@@ -212,8 +164,7 @@ public class Main {
                 }
                 br.close();
 
-                JSONObject json = new JSONObject((content.toString()));
-                return json;
+                return new JSONObject((content.toString()));
 
             } else {
                 System.out.println("Error");
@@ -225,4 +176,58 @@ public class Main {
             return null;
         }
     }
+
+    public static void displayCharacter(JSONObject character) {
+        System.out.println("Name: " + character.get("name").toString());
+        System.out.println("Aliases: " + character.get("aliases").toString());
+        System.out.println("Gender: " + character.get("gender").toString());
+        System.out.println("Born: " + character.get("born").toString());
+        System.out.println("Played By: " + character.get("playedBy").toString());
+        System.out.println("Culture: " + character.get("culture").toString());
+        System.out.println();
+        System.out.println("Working..");
+    }
+
+    public static void displayMembers(ArrayList<String> swornMembers) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Do you want to display all the sworn members of this characters house [yes/no]? ");
+        String answer = scanner.next().toLowerCase();
+        switch (answer) {
+            case "yes":
+                for (int i = 0; i < swornMembers.size(); i++) {
+                    System.out.println((i + 1) +". " + swornMembers.get(i));
+                }
+                break;
+            case "no":
+                System.out.println("As you wish.");
+                break;
+            default:
+                System.out.println("I take that as a no.");
+                break;
+        }
+        scanner.close();
+        System.out.println();
+        System.out.println("Working...");
+        System.out.println();
+    }
+
+    public static void displayPOVCharacters(Map<String, String[]> bookPovListPair, String publisher) {
+        System.out.println("All books published by \"" + publisher + "\": ");
+        for (Map.Entry<String, String[]> pair: bookPovListPair.entrySet()) {
+            System.out.println();
+            System.out.println("Book: \"" + pair.getKey() + "\"");
+            System.out.print("POV: ");
+            for (int i = 0; i < pair.getValue().length; i++) {
+                if (i < pair.getValue().length - 1) {
+                    System.out.print(pair.getValue()[i] + ", ");
+                } else {
+                    System.out.print(pair.getValue()[i]);
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+
 }
